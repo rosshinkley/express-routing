@@ -1,0 +1,264 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Express Routing</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section><h1>Express Routing</h1></section>
+				<section data-markdown>
+					<script type='text/template'>
+						## What is Express?
+
+						Express describes itself as a:
+
+						> Fast, unopinionated, minimalist web framework for Node.js
+					</script>
+				</section>
+				<section>
+					<h2>in other words...</h2>
+					<p>Express lets you make decisions on what is best for yourself.</p>
+					<p>Today we're going to make some decisions about routing.</p>
+				</section>
+				<section>
+					<h2>where does routing fit?</h2>
+					Let's take a look at an ordinary-looking URL's parts:
+					<span>
+						<span class='fragment highlight-purple' data-fragment-index='0'>Protocol,&nbsp;</span>
+						<span class='fragment highlight-red' data-fragment-index='1'>Domain,&nbsp;</span>
+						<span class='fragment highlight-green' data-fragment-index='2'>Route,&nbsp;</span>
+						<span class='fragment highlight-blue' data-fragment-index='3'>Query String</span>
+					</span>
+					<div>
+						<span>
+							<span class='fragment highlight-purple' data-fragment-index='0'>http://</span>
+							<span class='fragment highlight-red' data-fragment-index='1'>www.example.com</span>
+							<span class='fragment highlight-green' data-fragment-index='2'>/some/route</span>
+							<span class='fragment highlight-blue' data-fragment-index='3'>?foo=bar&amp;baz=quux</span>
+						</span>
+					</div>
+					<br/>
+					<span class='fragment' data-fragment-index='4'>
+						We will be focusing on the <span class='fragment highlight-green' data-fragment-index='4'>route</span>.
+					</span>
+
+				</section>
+				<section>
+					<h2>routing in express</h2>
+					<p>
+						<div>Router methods are generally of the form:</div>
+						<code>router.METHOD(PATH, HANDLER)</code>
+					</p>
+					<p>
+						<div class='fragment fade-in'>METHOD is the kind of request</div>
+						<div class='fragment fade-in'>PATH defines what your request handler can respond to</div>
+						<div class='fragment fade-in'>HANDLER is a function holding your logic for handling the request</div>
+					</p>
+				</section>
+				<section>
+					<h2>defining a handler</h2>
+					<p>Handlers are functions that take up to three parameters:</p>
+					<ul>
+						<li><strong>request:&nbsp;</strong>an object housing all of the request information, including what URL was matched, the body of the request (if there was one), the parameters for a request (if there are any), the query string information (if there is any)</li>
+						<li><strong>response:&nbsp;</strong>an object containing methods for responding to a request</li>
+						<li><strong>next:&nbsp;</strong>(optional) instead of responding to the request directly, this will move the request to the next call in the Express stack or the next matching route</li>
+				</section>
+				<section>
+					<h2>our very first route</h2>
+					<pre>
+					  <code>//include express
+var express = require('express');
+//create an express application
+var app = express();
+  
+//define a route on `/hello/world`
+app.get('/hello/world', function(request, response){
+  console.log('got request for "/hello/world"');
+  response.send('hello there!');
+});
+
+//have the application listen on a specific port
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!');
+});
+					  </code>
+					</pre>
+					
+				</section>
+				<section>
+					<h3>console output</h3>
+					<pre>
+					      <code class='text'>Example app listening on port 3000!
+got request for "/hello/world"</code>
+					</pre>
+					<h3>browser output</h3>
+					<img src='assets/browser.png'></img>
+
+				</section>
+				<section>
+					<h2>wait, what actually happened?</h2>
+					<ul>
+						<li>The web browser issued a GET method request to the locally running Express service</li>
+						<li>Express interpreted the route on the request, finding a match for the route</li>
+						<li>Express returned some data to us, in this case, a friendly message</li>
+					</ul>
+				</section>
+				<section>
+					<h2>a quick aside about methods</h2>
+					<p>Browser navigation generally uses GET.</p>
+					<div>
+						Express can handle many methods, including:
+						<ul>
+							<li><strong>GET:&nbsp;</strong><span>retrieve information from a service</span></li>
+							<li><strong>POST:&nbsp;</strong><span>create records</span></li>
+							<li><strong>PUT:&nbsp;</strong><span>update records</span></li>
+							<li><strong>DELETE:&nbsp;</strong><span>delete records</span></li>
+						</ul>
+					</div>
+				</section>
+				<section>
+					<h2>explicit paths</h2>
+					<p>Routes can be as simple as we've already seen, explicitly defining a slash-separated path.</p>
+					<pre>
+						<code class='javascript'>
+router.get('/hello/world', function(request, response){
+	response.send('hello there!');
+});
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h2>string patterns</h2>
+					<div>Routes support wildcards and repetition.</div>
+					<pre>
+						<code>
+//asterisks match zero or more characters in the path
+router.get('/he*o/world', function(request, response) {
+  //matches `/heo/world`, `/hello/world`, `/heyo/world`, etc
+  res.send('hello there!');
+});
+
+//plus signs match the preceding character 
+//as many times as it happens in a row
+router.get('/hel+o/world', function(request, response) {
+  //matches `/helo/world`, `/helllllllllllo/world`, etc
+  res.send('hello there!');
+});
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h2>more string patterns</h2>
+					<div>Routes support making parts of strings optional and grouping characters together.</div>
+					<pre>
+						<code>
+//question marks make a character optional
+router.get('/hel?lo/world', function(request, response) {
+  //matches `/helo/world`, `/hello/world`
+  res.send('hello there!');
+});
+
+//parenthesis can be used to group characters
+//here, the Ls in `hello` are optional
+router.get('/he(ll)?o/world', function(request, response) {
+  //matches `/heo/world`, `/hello/world`
+  res.send('hello there!');
+});
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h2>route parameters</h2>
+					<div>Routes can have named parameters prefixed by colons (:) that are available on <code>request.params.YOUR_VARIABLE_NAME</code>.</div>
+					<pre>
+						<code>
+router.get('/hello/:name', function(request, response) {
+  //matches `/hello/you`, `/hello/sarah`, 
+  //or any other name you can think of
+  //let's also greet our new friend by name!
+  res.send('hello there, ' + request.params.name + '!');
+});
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h2>worth mentioning:<br/>regular expressions</h2>
+					<div>Routes also support regular expressions, which are an incredibly powerful way to parse text in a known format.</div>
+					<div style='font-size: 50%'>Regular expressions can also be incredibly complicated - this is by no means a complete coverage of their abilities.  They are mentioned here for completeness' sake.</div>
+					<pre>
+						<code>
+//this is the regular expression equivalent to the
+//asterisk example from String Patterns
+router.get(/^\/he.*o\/world$/, function(request, response) {
+  //matches `/heo/world`, `/hello/world`, `/heyo/world`, etc
+  res.send('hello there!');
+});
+						</code>
+					</pre>
+				</section>
+				<section>
+					<h2>route ordering</h2>
+					Be careful when setting up routes.  Consider:
+					<pre>
+						<code>
+router.get('/hello/:name', function(request, response){ ... });
+router.get('/hello/world', function(request, response){ ... });
+						</code>
+					</pre>
+					<div>
+						Issuing a call to <code>/hello/world</code> will execute the first route it matches, and in this case, <code>/hello/:name</code> will fulfill the request!
+					</div>
+				</section>
+				<section data-markdown>
+					<script type='text/template'>
+						## where do we go from here?
+					
+						- [HTTP methods](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol#Request_methods)
+						- [HTTP status codes](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes)
+						- [Express routers and `.use()`](http://expressjs.com/en/4x/api.html#router)
+					</script>
+				</section>
+				<section>
+					<h2>Thanks!</h2>
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
