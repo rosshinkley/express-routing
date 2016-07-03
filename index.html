@@ -94,7 +94,7 @@ var express = require('express');
 var app = express();
   
 //define a route on `/hello/world`
-app.get('/hello/world', function(request, response){
+app.get('/hello/world', function(request, response) {
   console.log('got request for "/hello/world"');
   response.send('hello there!');
 });
@@ -143,7 +143,7 @@ got request for "/hello/world"</code>
 					<p>Routes can be as simple as we've already seen, explicitly defining a slash-separated path.</p>
 					<pre>
 						<code class='javascript'>
-app.get('/hello/world', function(request, response){
+app.get('/hello/world', function(request, response) {
   response.send('hello there!');
 });
 						</code>
@@ -223,8 +223,8 @@ app.get(/^\/he.*o\/world$/, function(request, response) {
 					Be careful when setting up routes.  Consider:
 					<pre>
 						<code>
-app.get('/hello/:name', function(request, response){ ... });
-app.get('/hello/world', function(request, response){ ... });
+app.get('/hello/:name', function(request, response) { ... });
+app.get('/hello/world', function(request, response) { ... });
 						</code>
 					</pre>
 					<div>
