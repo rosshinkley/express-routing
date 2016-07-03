@@ -24,7 +24,10 @@
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section><h1>Express Routing</h1></section>
+				<section>
+				  <h1>Express Routing:</h1>
+				  <h2>a quick introduction</h2>
+				</section>
 				<section data-markdown>
 					<script type='text/template'>
 						## What is Express?
@@ -140,8 +143,8 @@ got request for "/hello/world"</code>
 					<p>Routes can be as simple as we've already seen, explicitly defining a slash-separated path.</p>
 					<pre>
 						<code class='javascript'>
-router.get('/hello/world', function(request, response){
-	response.send('hello there!');
+app.get('/hello/world', function(request, response){
+  response.send('hello there!');
 });
 						</code>
 					</pre>
@@ -152,14 +155,14 @@ router.get('/hello/world', function(request, response){
 					<pre>
 						<code>
 //asterisks match zero or more characters in the path
-router.get('/he*o/world', function(request, response) {
+app.get('/he*o/world', function(request, response) {
   //matches `/heo/world`, `/hello/world`, `/heyo/world`, etc
   res.send('hello there!');
 });
 
 //plus signs match the preceding character 
 //as many times as it happens in a row
-router.get('/hel+o/world', function(request, response) {
+app.get('/hel+o/world', function(request, response) {
   //matches `/helo/world`, `/helllllllllllo/world`, etc
   res.send('hello there!');
 });
@@ -172,14 +175,14 @@ router.get('/hel+o/world', function(request, response) {
 					<pre>
 						<code>
 //question marks make a character optional
-router.get('/hel?lo/world', function(request, response) {
+app.get('/hel?lo/world', function(request, response) {
   //matches `/helo/world`, `/hello/world`
   res.send('hello there!');
 });
 
 //parenthesis can be used to group characters
 //here, the Ls in `hello` are optional
-router.get('/he(ll)?o/world', function(request, response) {
+app.get('/he(ll)?o/world', function(request, response) {
   //matches `/heo/world`, `/hello/world`
   res.send('hello there!');
 });
@@ -191,7 +194,7 @@ router.get('/he(ll)?o/world', function(request, response) {
 					<div>Routes can have named parameters prefixed by colons (:) that are available on <code>request.params.YOUR_VARIABLE_NAME</code>.</div>
 					<pre>
 						<code>
-router.get('/hello/:name', function(request, response) {
+app.get('/hello/:name', function(request, response) {
   //matches `/hello/you`, `/hello/sarah`, 
   //or any other name you can think of
   //let's also greet our new friend by name!
@@ -208,7 +211,7 @@ router.get('/hello/:name', function(request, response) {
 						<code>
 //this is the regular expression equivalent to the
 //asterisk example from String Patterns
-router.get(/^\/he.*o\/world$/, function(request, response) {
+app.get(/^\/he.*o\/world$/, function(request, response) {
   //matches `/heo/world`, `/hello/world`, `/heyo/world`, etc
   res.send('hello there!');
 });
@@ -220,8 +223,8 @@ router.get(/^\/he.*o\/world$/, function(request, response) {
 					Be careful when setting up routes.  Consider:
 					<pre>
 						<code>
-router.get('/hello/:name', function(request, response){ ... });
-router.get('/hello/world', function(request, response){ ... });
+app.get('/hello/:name', function(request, response){ ... });
+app.get('/hello/world', function(request, response){ ... });
 						</code>
 					</pre>
 					<div>
